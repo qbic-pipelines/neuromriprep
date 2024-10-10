@@ -1,0 +1,16 @@
+bump_version: null
+lint: {}
+nf_core_version: 3.0.1
+org_path: null
+repository_type: pipeline
+template:
+  author: luis, mahnaz, caro
+  description: preprocessing neuro mri images
+  force: true
+  is_nfcore: true
+  name: neuromriprep
+  org: nf-core
+  outdir: .
+  skip_features: []
+  version: 1.0.0dev
+update: null
