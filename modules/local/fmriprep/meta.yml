@@ -1,0 +1,51 @@
+name: fmriprep
+description: Runs fMRIPrep, a functional magnetic resonance imaging (fMRI) data preprocessing pipeline
+keywords:
+  - fmri
+  - preprocessing
+  - bids
+tools:
+  - fmriprep:
+      description: A robust preprocessing pipeline for functional MRI data
+      homepage: https://fmriprep.org
+      documentation: https://fmriprep.org/en/stable/
+      tool_dev_url: https://github.com/nipreps/fmriprep
+      doi: "10.1038/s41592-018-0235-4"
+      licence: ["Apache-2.0"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - input_dir:
+      type: directory
+      description: Directory containing BIDS dataset
+      pattern: "*"
+  - output_dir:
+      type: directory
+      description: Directory where fMRIPrep output will be saved
+      pattern: "*"
+  - fs_license:
+      type: file
+      description: FreeSurfer license file
+      pattern: "license.txt"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - fmriprep_output:
+      type: directory
+      description: Directory containing fMRIPrep output files
+      pattern: "*"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@CaroAMN"

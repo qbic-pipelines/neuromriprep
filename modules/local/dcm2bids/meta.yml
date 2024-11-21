@@ -1,0 +1,47 @@
+name: convert_dicom_to_bids
+description: Converts DICOM files to BIDS format using dcm2bids
+keywords:
+  - dicom
+  - bids
+  - conversion
+tools:
+  - dcm2bids:
+      description: A tool to convert DICOM files to BIDS format
+      homepage: https://github.com/UNFmontreal/Dcm2Bids
+      documentation: https://unfmontreal.github.io/Dcm2Bids/
+      tool_dev_url: https://github.com/UNFmontreal/Dcm2Bids
+      doi: ""
+      licence: ["GPL-3.0"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', session_id:'01' ]
+  - dicom_dir:
+      type: directory
+      description: Directory containing DICOM files
+      pattern: "*"
+  - config_file:
+      type: file
+      description: Configuration file for dcm2bids
+      pattern: "*.json"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', session_id:'01' ]
+  - bids_files:
+      type: directory
+      description: Directory containing BIDS-formatted files
+      pattern: "bids_output/**"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@CaroAMN"

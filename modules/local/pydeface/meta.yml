@@ -1,0 +1,44 @@
+name: pydeface
+description: Removes facial structure from MRI images
+keywords:
+  - deface
+  - anonymize
+  - mri
+  - neuroimaging
+tools:
+  - pydeface:
+      description: Removes facial structure from MRI images
+      homepage: https://github.com/poldracklab/pydeface
+      documentation: https://github.com/poldracklab/pydeface
+      tool_dev_url: https://github.com/poldracklab/pydeface
+      doi: ""
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - input_file:
+      type: file
+      description: Input MRI image file
+      pattern: "*.nii.gz"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - defaced_image:
+      type: file
+      description: Defaced MRI image file
+      pattern: "*_defaced.nii.gz"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@CaroAMN"

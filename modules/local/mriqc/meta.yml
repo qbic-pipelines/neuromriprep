@@ -1,0 +1,48 @@
+name: mriqc
+description: Runs MRIQC (Magnetic Resonance Image Quality Control) on BIDS datasets
+keywords:
+  - mriqc
+  - quality control
+  - mri
+  - bids
+tools:
+  - mriqc:
+      description: MRIQC extracts no-reference IQMs (image quality metrics) from structural (T1w and T2w) and functional MRI (magnetic resonance imaging) data.
+      homepage: https://mriqc.readthedocs.io
+      documentation: https://mriqc.readthedocs.io
+      tool_dev_url: https://github.com/nipreps/mriqc
+      doi: "10.1371/journal.pone.0184661"
+      licence: ["Apache-2.0"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - input_dir:
+      type: directory
+      description: Directory containing BIDS dataset
+      pattern: "*"
+  - output_dir:
+      type: directory
+      description: Directory where MRIQC output will be saved
+      pattern: "*"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - mriqc_output:
+      type: directory
+      description: Directory containing MRIQC output files
+      pattern: "*"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@CaroAMN"

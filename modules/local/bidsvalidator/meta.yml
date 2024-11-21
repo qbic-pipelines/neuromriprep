@@ -1,0 +1,43 @@
+name: bidsvalidator
+description: Validates BIDS (Brain Imaging Data Structure) datasets
+keywords:
+  - bids
+  - validation
+  - neuroimaging
+tools:
+  - bids_validator:
+      description: A validator for the Brain Imaging Data Structure
+      homepage: https://github.com/bids-standard/bids-validator
+      documentation: https://github.com/bids-standard/bids-validator#quickstart
+      tool_dev_url: https://github.com/bids-standard/bids-validator
+      doi: "10.1038/sdata.2016.44"
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - input_dir:
+      type: directory
+      description: Directory containing BIDS dataset to validate
+      pattern: "*"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - log:
+      type: file
+      description: Log file containing validation results
+      pattern: "*_validation_log.txt"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+
+authors:
+  - "@CaroAMN"
