@@ -18,7 +18,6 @@
 include { NEUROMRIPREP            } from './workflows/neuromriprep'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_neuromriprep_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_neuromriprep_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_neuromriprep_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -26,10 +25,6 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_neur
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,7 +81,7 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     NFCORE_NEUROMRIPREP (
-        params.cinput_dirs,
+        params.input_dirs,
         params.bids_dir,
         params.config,
         params.fs_license

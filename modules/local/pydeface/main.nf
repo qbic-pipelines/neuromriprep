@@ -2,13 +2,13 @@ process PYDEFACE {
     tag "$meta.id"
     label 'process_low'
 
-    conda "bioconda::pydeface=2.0.0"
+    
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://github.com/poldracklab/pydeface/releases/download/v2.0.0/pydeface-2.0.0.sif':
         'poldracklab/pydeface:2.0.0' }"
 
     input:
-    tuple val(meta), path(input_file)
+    tuple val(meta), path(input_file, stageAs: "input.nii.gz")
 
     output:
     tuple val(meta), path("*_defaced.nii.gz"), emit: defaced_image
@@ -20,11 +20,11 @@ process PYDEFACE {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def extension = input_file.extension ? input_file.extension : ''
-    def filename = input_file.name.toString().minus(extension)
+    //def extension = input_file.extension ? input_file.extension : ''
+    //def filename = input_file.name.toString().minus(extension)
     """
-    pydeface $input_file \\
-        --outfile ${filename}_defaced${extension} \\
+    pydeface input.nii.gz \\
+        --outfile ${prefix}_defaced.nii.gz \\
         $args
 
     cat <<-END_VERSIONS > versions.yml
@@ -35,10 +35,8 @@ process PYDEFACE {
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def extension = input_file.extension ? input_file.extension : ''
-    def filename = input_file.name.toString().minus(extension)
     """
-    touch ${filename}_defaced${extension}
+    touch ${prefix}_defaced.nii.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
