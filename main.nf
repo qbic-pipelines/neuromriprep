@@ -15,7 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { NEUROMRIPREP  } from './workflows/neuromriprep'
+include { NEUROMRIPREP            } from './workflows/neuromriprep'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_neuromriprep_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_neuromriprep_pipeline'
 include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_neuromriprep_pipeline'
@@ -43,7 +43,11 @@ params.fasta = getGenomeAttribute('fasta')
 workflow NFCORE_NEUROMRIPREP {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+
+    ch_input_dirs // channel: [ val(meta), path(input_dir) ]
+    ch_bids_dir   // channel: path(bids_dir)
+    ch_config     // channel: path(config_file)
+    ch_fs_license // channel: path(fs_license)
 
     main:
 
@@ -51,10 +55,11 @@ workflow NFCORE_NEUROMRIPREP {
     // WORKFLOW: Run pipeline
     //
     NEUROMRIPREP (
-        samplesheet
+        ch_input_dirs,
+        ch_bids_dir,
+        ch_config,
+        ch_fs_license
     )
-    emit:
-    multiqc_report = NEUROMRIPREP.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,7 +86,10 @@ workflow {
     // WORKFLOW: Run main workflow
     //
     NFCORE_NEUROMRIPREP (
-        PIPELINE_INITIALISATION.out.samplesheet
+        params.cinput_dirs,
+        params.bids_dir,
+        params.config,
+        params.fs_license
     )
     //
     // SUBWORKFLOW: Run completion tasks
