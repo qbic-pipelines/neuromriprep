@@ -40,7 +40,6 @@ workflow NFCORE_NEUROMRIPREP {
     take:
 
     ch_input_dirs // channel: [ val(meta), path(input_dir) ]
-    ch_bids_dir   // channel: path(bids_dir)
     ch_config     // channel: path(config_file)
     ch_fs_license // channel: path(fs_license)
 
@@ -51,7 +50,6 @@ workflow NFCORE_NEUROMRIPREP {
     //
     NEUROMRIPREP (
         ch_input_dirs,
-        ch_bids_dir,
         ch_config,
         ch_fs_license
     )
@@ -76,15 +74,13 @@ workflow {
         params.outdir,
         params.input
     )
-    
+
     //
     // WORKFLOW: Run main workflow
     //
     NFCORE_NEUROMRIPREP (
         params.input_dirs,
-        params.bids_dir,
-        params.config,
-        params.fs_license
+        params.config
     )
     //
     // SUBWORKFLOW: Run completion tasks

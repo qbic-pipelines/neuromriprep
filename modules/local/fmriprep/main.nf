@@ -26,7 +26,7 @@ process FMRIPREP {
     def random_seed = task.ext.random_seed ?: 13
     """
     mkdir -p \$PWD/results
-    esults="\$PWD/results"
+    results="\$PWD/results"
 
 
     fmriprep \\
@@ -50,9 +50,9 @@ process FMRIPREP {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir -p ${output_dir}/sub-${prefix}
-    touch ${output_dir}/sub-${prefix}/sub-${prefix}_desc-preproc_T1w.nii.gz
-    touch ${output_dir}/sub-${prefix}/sub-${prefix}_desc-preproc_bold.nii.gz
+    mkdir -p \$PWD/results/sub-${prefix}
+    touch \$PWD/results/sub-${prefix}/sub-${prefix}_desc-preproc_T1w.nii.gz
+    touch \$PWD/results/sub-${prefix}/sub-${prefix}_desc-preproc_bold.nii.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

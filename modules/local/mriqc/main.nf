@@ -49,9 +49,9 @@ process MRIQC {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir -p ${output_dir}/sub-${prefix}
-    touch ${output_dir}/sub-${prefix}/sub-${prefix}_T1w.html
-    touch ${output_dir}/sub-${prefix}/sub-${prefix}_T1w.json
+    mkdir -p \$PWD/results/sub-${prefix}
+    touch \$PWD/results/sub-${prefix}/sub-${prefix}_T1w.html
+    touch \$PWD/results/sub-${prefix}/sub-${prefix}_T1w.json
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

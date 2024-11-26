@@ -29,7 +29,8 @@ process DCM2BIDS {
     path config_file
 
     output:
-    tuple val(meta), path("bids_output/**") , emit: bids_files
+    tuple val(meta)
+    path("bids_output/**")                  , emit: bids_files
     path "versions.yml"                     , emit: versions
 
     when:
