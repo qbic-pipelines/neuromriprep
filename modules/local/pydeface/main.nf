@@ -2,10 +2,10 @@ process PYDEFACE {
     tag "$meta.id"
     label 'process_low'
 
-    
+
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://github.com/poldracklab/pydeface/releases/download/v2.0.0/pydeface-2.0.0.sif':
-        'poldracklab/pydeface:2.0.0' }"
+        'docker://poldracklab/pydeface:37-2e0c2d':
+        'poldracklab/pydeface:37-2e0c2d' }"
 
     input:
     tuple val(meta), path(input_file, stageAs: "input.nii.gz")

@@ -19,15 +19,15 @@ process DCM2BIDS {
     tag "$meta.id"
     label 'process_single'
 
-    
+
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/YOUR-TOOL-HERE':
-        'biocontainers/YOUR-TOOL-HERE' }"
+        'docker://unfmontreal/dcm2bids:3.2.0':
+        'unfmontreal/dcm2bids:3.2.0' }"
 
     input:
     tuple val(meta), path(dicom_dir)
     path config_file
-    
+
     output:
     tuple val(meta), path("bids_output/**") , emit: bids_files
     path "versions.yml"                     , emit: versions

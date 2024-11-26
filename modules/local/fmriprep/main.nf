@@ -5,8 +5,8 @@ process FMRIPREP {
 
     conda "bioconda::fmriprep=24.0.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://github.com/nipreps/fmriprep/releases/download/24.0.1/fmriprep-24.0.1.sif':
-        'nipreps/fmriprep:24.0.1' }"
+        'docker://nipreps/fmriprep:24.1.1':
+        'nipreps/fmriprep:24.1.1' }"
 
     input:
     tuple val(meta), path(input_dir)

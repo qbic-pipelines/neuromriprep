@@ -4,12 +4,12 @@ process MRIQC {
 
     conda "bioconda::mriqc=24.0.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://github.com/nipreps/mriqc/releases/download/24.0.2/mriqc-24.0.2.sif':
+        'docker://nipreps/mriqc:24.0.2':
         'nipreps/mriqc:24.0.2' }"
 
     input:
     tuple val(meta), path(input_dir)
-    
+
 
     output:
     tuple val(meta), path("results/*")    , emit: mriqc_output

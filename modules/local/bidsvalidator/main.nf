@@ -3,8 +3,8 @@ process BIDSVALIDATOR {
     label 'process_low'
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://github.com/bids-standard/bids-validator/releases/download/v1.14.13/bids-validator-1.14.13.sif':
-        'bids/validator:1.14.13' }"
+        'docker://bids/validator:v1.15.0':
+        'bids/validator:v1.15.0' }"
 
     input:
     tuple val(meta), path(input_dir)
