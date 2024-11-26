@@ -41,7 +41,7 @@ workflow NFCORE_NEUROMRIPREP {
 
     ch_input_dirs // channel: [ val(meta), path(input_dir) ]
     ch_config     // channel: path(config_file)
-    ch_fs_license // channel: path(fs_license)
+
 
     main:
 
@@ -51,7 +51,7 @@ workflow NFCORE_NEUROMRIPREP {
     NEUROMRIPREP (
         ch_input_dirs,
         ch_config,
-        ch_fs_license
+
     )
 }
 /*
@@ -81,6 +81,7 @@ workflow {
     NFCORE_NEUROMRIPREP (
         params.input_dirs,
         params.config
+
     )
     //
     // SUBWORKFLOW: Run completion tasks
@@ -91,8 +92,8 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        params.hook_url,
-        NFCORE_NEUROMRIPREP.out.multiqc_report
+        params.hook_url
+        //NFCORE_NEUROMRIPREP.out.multiqc_report
     )
 }
 
