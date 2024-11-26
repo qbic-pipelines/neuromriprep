@@ -9,10 +9,10 @@ process MRIQC {
 
     input:
     tuple val(meta), path(input_dir)
-    path output_dir
+    
 
     output:
-    tuple val(meta), path("${output_dir}"), emit: mriqc_output
+    tuple val(meta), path("results/*")    , emit: mriqc_output
     path "versions.yml"                   , emit: versions
 
     when:
@@ -23,9 +23,13 @@ process MRIQC {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def mem_gb = task.memory.toGiga()
     """
+
+    mkdir -p \$PWD/results
+    results="\$PWD/results"
+
     mriqc \\
         $input_dir \\
-        $output_dir \\
+        \$results \\
         participant \\
         --participant-label $prefix \\
         --nprocs $task.cpus \\

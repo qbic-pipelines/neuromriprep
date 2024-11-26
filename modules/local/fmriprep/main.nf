@@ -10,11 +10,11 @@ process FMRIPREP {
 
     input:
     tuple val(meta), path(input_dir)
-    path output_dir
+    //path output_dir
     path fs_license
 
     output:
-    tuple val(meta), path("${output_dir}"), emit: fmriprep_output
+    tuple val(meta), path ("results/*")   , emit: fmriprep_output
     path "versions.yml"                   , emit: versions
 
     when:
@@ -25,9 +25,13 @@ process FMRIPREP {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def random_seed = task.ext.random_seed ?: 13
     """
+    mkdir -p \$PWD/results
+    esults="\$PWD/results"
+
+
     fmriprep \\
         $input_dir \\
-        $output_dir \\
+        \$results \\
         participant \\
         --participant-label $prefix \\
         --fs-license-file $fs_license \\

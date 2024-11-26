@@ -59,16 +59,18 @@ workflow NEUROMRIPREP {
         ch_versions = ch_versions.mix(PYDEFACE.out.versions)
     }
     if (params.run_mriqc) {
-        MRIQC(ch_bids_dir, params.mriqcOutputDir)
+        MRIQC(ch_bids_dir)
         ch_versions = ch_versions.mix(MRIQC.out.versions)
     }
     if (params.run_fmriprep) {
-        FMRIPREP(ch_bids_dir, params.fmriprepOutputDir, ch_fs_license)
+        FMRIPREP(ch_bids_dir, ch_fs_license)
         ch_versions = ch_versions.mix(FMRIPREP.out.versions)
     }
     if (params.run_complete) {
+
         // Step 1: Convert DICOM to BIDS
         DCM2BIDS ( ch_input_dirs, ch_config )
+
         // Step 2: Validate BIDS data
         BIDSVALIDATOR ( ch_bids_dir )
 
@@ -83,10 +85,10 @@ workflow NEUROMRIPREP {
         PYDEFACE(ch_anat_files)
 
         // Step 4: Run MRIQC
-        MRIQC ( ch_bids_dir, params.mriqcOutputDir )
+        MRIQC ( ch_bids_dir)
 
         // Step 5: Run fMRIPrep
-        FMRIPREP ( ch_bids_dir, params.fmriprepOutputDir, ch_fs_license )
+        FMRIPREP ( ch_bids_dir, ch_fs_license )
 
         ch_versions = ch_versions.mix(DCM2BIDS.out.versions)
         ch_versions = ch_versions.mix(BIDSVALIDATOR.out.versions)
