@@ -29,7 +29,7 @@ process DCM2BIDS {
     path config_file
 
     output:
-    tuple val(meta)
+    val(meta)
     path("bids_output/**")                  , emit: bids_files
     path "versions.yml"                     , emit: versions
 
@@ -42,13 +42,9 @@ process DCM2BIDS {
     """
     mkdir -p bids_output
 
-    apptainer run -e --containall \\
-        -B ${dicom_dir}:/dicoms:ro \\
-        -B ${config_file}:/config.json:ro \\
-        -B ./bids_output:/bids \\
-        --session ${meta.session_id} \\
-        -o /bids \\
-        -d /dicoms \\
+    dcm2bids \\
+        -o bids_output \\
+        -d ${dicom_dir} \\
         -c ${config_file} \\
         -p ${meta.id} \\
         $args
@@ -62,7 +58,6 @@ process DCM2BIDS {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    mkdir -p bids_output
     mkdir -p bids_output/sub-${meta.id}/ses-${meta.session_id}
     touch bids_output/sub-${meta.id}/ses-${meta.session_id}/sub-${meta.id}_ses-${meta.session_id}_T1w.nii.gz
     touch bids_output/sub-${meta.id}/ses-${meta.session_id}/sub-${meta.id}_ses-${meta.session_id}_T2w.nii.gz
@@ -71,7 +66,7 @@ process DCM2BIDS {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dcm2bids: 2.1.9
+        dcm2bids: 3.2.0
     END_VERSIONS
     """
 }

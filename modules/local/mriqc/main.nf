@@ -2,7 +2,6 @@ process MRIQC {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "bioconda::mriqc=24.0.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://nipreps/mriqc:24.0.2':
         'nipreps/mriqc:24.0.2' }"

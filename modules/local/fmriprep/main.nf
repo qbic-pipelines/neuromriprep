@@ -3,7 +3,7 @@ process FMRIPREP {
     label 'process_high'
     label 'process_long'
 
-    conda "bioconda::fmriprep=24.0.1"
+
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'docker://nipreps/fmriprep:24.1.1':
         'nipreps/fmriprep:24.1.1' }"
