@@ -21,8 +21,8 @@ process DCM2BIDS {
 
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'docker://unfmontreal/dcm2bids:3.2.0':
-        'unfmontreal/dcm2bids:3.2.0' }"
+        'docker://unfmontreal/dcm2bids:3.1.0':
+        'unfmontreal/dcm2bids:3.1.0' }"
 
     input:
     tuple val(meta), path(dicom_dir)
@@ -51,7 +51,8 @@ process DCM2BIDS {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dcm2bids: \$(dcm2bids --version 2>&1 | sed 's/dcm2bids //g')
+        dcm2bids: "\$(dcm2bids --version 2>&1 | sed 's/dcm2bids //g')"
+        
     END_VERSIONS
     """
 
@@ -66,7 +67,7 @@ process DCM2BIDS {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        dcm2bids: 3.2.0
+        dcm2bids: 3.1.0
     END_VERSIONS
     """
 }

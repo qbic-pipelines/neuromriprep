@@ -118,10 +118,10 @@ workflow NEUROMRIPREP {
 
 
    emit:
-    bids_files      = DCM2BIDS.out.bids_files
-    defaced_images  = PYDEFACE.out.defaced_image
-    mriqc_output    = MRIQC.out.mriqc_output
-    fmriprep_output = FMRIPREP.out.fmriprep_output
+    bids_files      = params.run_dcm2bids || params.run_complete ? DCM2BIDS.out.bids_files : Channel.empty()
+    defaced_images  = params.run_pydeface || params.run_complete ? PYDEFACE.out.defaced_image : Channel.empty()
+    mriqc_output    = params.run_mriqc || params.run_complete ? MRIQC.out.mriqc_output : Channel.empty()
+    fmriprep_output = params.run_fmriprep || params.run_complete ? FMRIPREP.out.fmriprep_output : Channel.empty()
     versions        = ch_versions.ifEmpty(null)
 
 }
