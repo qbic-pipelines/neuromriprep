@@ -1,4 +1,12 @@
-# nf-core/neuromriprep: Citations
+# neuromriprep: Citations
+
+The consolidated bibliography is in the [README references](README.md#references), including MRIQC, fMRIPrep, BIDS, and thesis attribution. The legacy tool references below are retained for provenance; FastQC and MultiQC are not stages of the current MRI workflow, and packaging references do not imply use in every run.
+
+## FAIR-oriented research data management
+
+> Sezer, Z. H., Krüger, J., Goll, N., Kimmig, A.-C. S., Derntl, B., Kuhn Cuellar, L., Schwitalla, C., Boehme, L., & Nahnsen, S. (2026). _de.NBI Cloud Enables FAIR-oriented Management and Reproducible Workflows for Sensitive Bioimage Data in Mental Health Studies_. 18th International Workshop on Science Gateways (IWSG2026). Zenodo. [doi:10.5281/zenodo.22099332](https://doi.org/10.5281/zenodo.22099332).
+
+The paper describes the IRTG 2804 de.NBI/QBiC infrastructure and discusses neuromriprep in §V. It is an infrastructure reference, not a release DOI for this repository. For the related NFDI goals, see the official [NFDI4BIOIMAGE consortium description](https://www.nfdi.de/consortia-nfdi4bioimage/?lang=en).
 
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 

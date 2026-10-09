@@ -1,192 +1,77 @@
-# neuromriprep: Production Workflow User Guide
+# Production workflow: step-by-step execution
 
-Welcome! This guide is designed to help you run the **neuromriprep** pipeline on your MRI data. We’ve kept the language simple so that you can focus on your research without getting bogged down in technical details.
+Complete the [technical setup](usage.md) first, including the local `site.config`, `params.yaml`, required policy files, images, and fMRIPrep inputs. Commands below run from the repository root. Replace `/scratch/neuromriprep-work` with the same reflink-capable work directory in every invocation. The parameter file must retain `skip_mriqc: false` and `skip_fmriprep: false` for this staged sequence.
 
----
-
-## What is neuromriprep?
-
-**neuromriprep** is a "pipeline"—a series of automated steps—that takes your raw brain scans (DICOM files) and prepares them for scientific analysis. It organizes your data, checks for quality issues, cleans the images (preprocessing), and removes facial features to protect participant privacy (defacing).
-
----
-
-## 1. Before You Start
-
-To run this pipeline, you need two things installed on your computer or server:
-1.  **Nextflow**: The engine that runs the pipeline.
-2.  **Docker** or **Singularity/Apptainer**: Tools that handle all the complex scientific software automatically so you don't have to install them yourself.
-
-> [!TIP]
-> If you are working on a university cluster (like the NIC), these are usually already set up for you!
-
----
-
-## 2. Organizing Your Data
-
-The pipeline identifies subjects based on folder names in your data directory.
-
-### Subject Folder Format:
-`IRTGXX`
--   **XX**: The Subject ID (e.g., `01`, `02`, `10`).
-
-**Example**: A folder named `IRTG05` tells the pipeline this is **Subject 05**.
-
----
-
-## 3. The Samplesheet (List of Data)
-
-You must provide a CSV file mapping project IDs to their data locations.
-
-### Example `samplesheet.csv`:
-```csv
-project,dicom_dir
-01,/path/to/your/data/IRTG01
-01,/path/to/your/data/IRTG02
-```
-
--   **project**: Usually a two-digit code for your project (e.g., `01`).
--   **dicom_dir**: The **absolute path** (full address) to the folder containing the raw scans.
-
-> [!IMPORTANT]
-> ### 🐍 Python Helper Script
-> There is a Python script being developed to help you create this file automatically. 
-> 
-> *TODO: User to add details here once the script is available in the repository.*
-
----
-
-## 4. Step 3: Running the Pipeline (The "Magic Command")
-
-To run the full pipeline with all default cleaning and privacy steps:
+## 1. Convert and validate
 
 ```bash
-nextflow run nf-core/neuromriprep \
-    -profile <docker/singularity/apptainer> \
-    --input ./samplesheet.csv \
-    --outdir ./results \
-    --run_complete
+nextflow run . -profile apptainer -c site.config -params-file params.yaml \
+  -work-dir /scratch/neuromriprep-work \
+  --stop_bidsval true --stop_mriqc true --stop_fmriprep true
 ```
 
----
+Check the parsed participant/session names, converted acquisitions, field-map associations, `dataset_validation_log.txt`, and `bids_qc_summary.txt` under your output directory. The gate should report `check_passed: True` before continuing. Correct conversion inputs or mappings and rerun with `-resume` when needed. Accept only reviewed warning codes in the allowlist. A pipeline success message alone does not mean the gate passed.
 
-## 5. Deep Dive: All Pipeline Parameters
+## 2. Run and review MRIQC
 
-Below is an exhaustive list of every parameter you can set.
-
-### 5.1. Required Parameters
-| Parameter | Description |
-| :--- | :--- |
-| `--input` | Path to your `samplesheet.csv`. |
-| `--outdir` | Main directory for results. |
-
-### 5.2. Workflow Toggles (Step Control)
-These flags control which parts of the pipeline run.
-
-| Parameter | What it does |
-| :--- | :--- |
-| `--run_complete` | Shortcut to run the entire pipeline (Organize -> Check -> QC -> Clean -> Deface). |
-| `--run_dcm2bids` | Specifically run the DICOM to BIDS conversion. |
-| `--run_bidsvalidator` | Specifically run the BIDS format check. |
-| `--run_mriqc` | Specifically run the MRIQC quality control. |
-| `--run_fmriprep` | Specifically run the fMRIPrep image cleaning. |
-| `--run_pydeface` | Specifically run the Defacing privacy step. |
-| `--skip_mriqc` | Skip MRIQC even if `--run_complete` is on. |
-| `--skip_fmriprep` | Skip fMRIPrep even if `--run_complete` is on. |
-
-### 5.3. Stopping Points (For Manual Review)
-The pipeline can pause at specific stages to allow you to check the data before moving to heavy processing.
-
-| Parameter | When it stops |
-| :--- | :--- |
-| `--stop_bidsval` | Stops after BIDS validation. Defaults to `true`. Set to `false` to continue to downstream steps. |
-| `--stop_mriqc` | Stops after MRIQC reports are generated. Defaults to `true`. |
-| `--stop_fmriprep` | Stops after fMRIPrep cleaning is done. Defaults to `true`. |
-
-### 5.4. Filtering Subjects (VPN Files)
-You can limit processing to a subset of subjects by providing a text file (VPN file) containing a list of subject IDs (one per line, e.g., `IRTG01`).
-
-| Parameter | Context |
-| :--- | :--- |
-| `--mriqc_vpn_file` | Only run MRIQC for subjects in this list. |
-| `--fmriprep_vpn_file` | Only run fMRIPrep for subjects in this list. |
-| `--pydeface_vpn_file` | Only run Defacing for subjects in this list. |
-
-### 5.5. Tool-Specific Parameters
-
-#### **DCM2BIDS (Data Organization)**
--   `--dcm2bids_config`: Path to your custom conversion rules (JSON).
--   `--force_dcm2bids`: Re-run conversion even if files already exist.
--   `--outdir_copy`: If set, copies DICOMs to this folder before processing.
--   `--search`, `--include`, `--exclude`: Substrings to filter DICOM folders during copying.
-
-#### **fMRIPrep (Image Cleaning)**
--   `--fmriprep_fs_license`: **REQUIRED** path to your FreeSurfer license file.
--   `--fmriprep_bids_filter`: Use `ses01` or `ses02` to use built-in filters, or provide a path to your own filter JSON.
--   `--fmriprep_brainmask_dir`: Custom directory for brain masks.
-
-#### **Defacing (Privacy)**
--   `--deface_tool`: Choose your tool: `mri_deface` (default), `pydeface`, `fsl_deface`, `afni_refacer`, `deepdefacer`.
--   `--nondefaced_detector_model_path`: Path to the weights for the defacing check model.
-
-#### **mri_deface (Advanced Tuning)**
--   `--mri_deface_brain_template`: Path to brain template file.
--   `--mri_deface_face_template`: Path to face template file.
--   `--mri_deface_cpus`: Number of CPUs (default: 8).
--   `--mri_deface_mem`: Memory limit (default: 8 GB).
--   `--mri_deface_time`: Time limit (default: 2h).
-
-### 5.6. Generic & Reporting
--   `--email`: Address for run summary.
--   `--email_on_fail`: Only email if the pipeline crashes.
--   `--multiqc_title`: Custom title for the MultiQC report.
--   `--monochrome_logs`: Use black & white terminal output.
--   `--plaintext_email`: Send summary emails as plain text.
--   `--hook_url`: URL for Slack/Teams notifications (Incoming Webhook).
--   `--multiqc_methods_description`: Path to a custom YAML file for the MultiQC methods section.
--   `--validate_params`: Boolean (true/false) to enable parameter validation against the schema at runtime.
-
----
-
-## 6. Tweaking Resources (CPU & Memory)
-
-Scientists often need more power for specific steps. You can adjust this without changing the pipeline code.
-
-### Option A: Direct Parameters (for mri_deface)
-Use the parameters listed in section 4.5 (e.g., `--mri_deface_mem '16 GB'`).
-
-### Option B: Custom Config File
-Create a file named `my_resources.config`:
-
-```groovy
-process {
-    withName: 'FMRIPREP' {
-        memory = '100 GB'
-        cpus = 32
-    }
-}
+```bash
+nextflow run . -profile apptainer -c site.config -params-file params.yaml \
+  -work-dir /scratch/neuromriprep-work -resume \
+  --stop_bidsval false --stop_mriqc true --stop_fmriprep true
 ```
 
-Then run the pipeline with: `-c my_resources.config`.
+Inspect participant HTML reports, image-quality metrics, and group results under `derivatives/mriqc/`. Review motion, artifacts, coverage, and outliers in the context of your study. MRIQC does not automatically exclude problematic images. Record decisions and, if needed, prepare an explicit fMRIPrep participant list or BIDS filter.
 
----
+Keep `stop_fmriprep` true here: `stop_mriqc` alone does not disable the independent defacing branch.
 
-## 7. Important Files in `assets/`
+## 3. Run and review fMRIPrep
 
-The pipeline uses several default files located in the `assets/` directory. You can override these using parameters:
+```bash
+nextflow run . -profile apptainer -c site.config -params-file params.yaml \
+  -work-dir /scratch/neuromriprep-work -resume \
+  --stop_bidsval false --stop_mriqc false --stop_fmriprep true
+```
 
--   `assets/scripts/bids_gate.py`: Logic for the QC gate.
--   `assets/input_pipeline/bidsval_allowlist.txt`: List of BIDS warnings to ignore.
--   `assets/dcm2bids_config_IRTG.json`: Default organization rules.
+Inspect HTML reports under `derivatives/fmriprep/`, registration and normalization, tissue segmentation, functional preprocessing, and confounds. Reconcile completed participants against those requested. The example parameter file sets `ignore_fmriprep_fail: false`; the repository default can ignore failures after one retry. Resolve the repeated-subject task limitation before using a multi-session samplesheet.
 
----
+## 4. Generate and review defaced images
 
-## 8. Understanding Results
+```bash
+nextflow run . -profile apptainer -c site.config -params-file params.yaml \
+  -work-dir /scratch/neuromriprep-work -resume \
+  --stop_bidsval false --stop_mriqc false --stop_fmriprep false \
+  --deface_tool pydeface
+```
 
--   `results/BIDS/`: Your standardized data.
--   `results/multiqc/`: Combined quality reports.
--   `results/derivatives/fmriprep/`: Cleaned images.
--   `results/derivatives/mriqc/`: Quality metrics.
--   `results/pipeline_info/`: Technical logs and execution reports.
+Review anatomical results in `derivatives/defaces/` for residual facial features and unintended removal of brain tissue. Production defacing does not automatically run the benchmark renderer or detector. Defaced images are separate copies: raw BIDS images, fMRIPrep derivatives, sidecars and logs can still contain identifying information. Review the specific files intended for release; do not distribute the entire results directory as an anonymized dataset.
 
----
-*Documentation Version: 2.0 (Exhaustive)*
+## Other execution patterns
+
+With both skip flags false, the following combinations select the intended stages (subject to the production BIDS gate):
+
+| `stop_bidsval` | `stop_mriqc` | `stop_fmriprep` | Enabled work                                          |
+| -------------- | ------------ | --------------- | ----------------------------------------------------- |
+| true           | any          | any             | Conversion and validation only.                       |
+| false          | true         | true            | Conversion, validation, MRIQC.                        |
+| false          | false        | true            | Above plus fMRIPrep.                                  |
+| false          | false        | false           | All stages; downstream branches may run concurrently. |
+| false          | true         | false           | MRIQC and defacing, but no fMRIPrep.                  |
+
+For an unattended full run, use step 4 without `-resume` for a new run, after validating the study setup. It does not wait for human review between branches.
+
+For conversion/validation followed by defacing only:
+
+```bash
+nextflow run . -profile apptainer -c site.config -params-file params.yaml \
+  -work-dir /scratch/neuromriprep-work -resume \
+  --stop_bidsval false --skip_mriqc true --skip_fmriprep true \
+  --stop_mriqc false --stop_fmriprep false --deface_tool pydeface
+```
+
+In the current code, fMRIPrep is eligible when `!stop_mriqc || skip_mriqc` and not `skip_fmriprep`; defacing is eligible when `!stop_fmriprep || skip_fmriprep`. All are enclosed by `!stop_bidsval`. Therefore a skip flag is not a pause flag. Explicitly supply the complete combination when deviating from the staged guide.
+
+Only after manually reviewing all remaining BIDS findings should you consider `--enforce_bidsqc_gate false`. This reports the result but removes its downstream block; it does not repair validation issues.
+
+## Resume and completion checklist
+
+Use `nextflow log` to inspect previous runs; `-resume RUN_NAME` selects a particular cache. Keep the launch `.nextflow/` cache and work directory intact. Confirm expected subjects and outputs at each stage, preserve reports, and archive the software/configuration provenance before cleaning work files. See [outputs and diagnostics](output.md).

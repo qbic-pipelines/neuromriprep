@@ -1,12 +1,12 @@
-# nf-core/neuromriprep: Documentation
+# neuromriprep documentation
 
-The nf-core/neuromriprep documentation is split into the following pages:
+Read these pages in order for a first study run:
 
-- [Usage](usage.md)
-  - An overview of how the pipeline works, how to run it and a description of all of the different command-line flags.
-- [Production Workflow Guide](production_workflow_guide.md)
-  - A step-by-step, non-technical guide to running the production pipeline with your data.
-- [Output](output.md)
-  - An overview of the different results produced by the pipeline and how to interpret them.
+1. [Pipeline architecture](pipeline.md): stages, data dependencies, scientific context, and implementation limits.
+2. [Technical usage](usage.md): installation prerequisites, samplesheet format, study configuration, containers, and troubleshooting.
+3. [Production workflow guide](production_workflow_guide.md): explicit commands for each review checkpoint and resuming a run.
+4. [Outputs](output.md): published files, task-local diagnostics, and what to inspect.
+5. [Defacing benchmark](benchmark.md): comparing the four methods and interpreting QC results.
+6. [Prototype lessons](prototype-notes.md): operational guidance from the precursor project verified against current code.
 
-You can find a lot more documentation about installing, configuring and running nf-core pipelines on the website: [https://nf-co.re](https://nf-co.re)
+These pages describe the `dev` source, not a released turnkey package. The parameter schema, template help machinery, and bundled test profile do not yet describe a complete MRI run. Follow the documented source-backed parameters and local setup requirements instead.
